@@ -113,9 +113,9 @@ class FerretAI(FerretAIInit):
         # Environment info
         print(f"{C['cyan']}─────────────────────────── Environment ───────────────────────────{C['reset']}")
         print(f"● {C['context']}Model:{C['reset']} {CONFIG['model']}")
-        print(f"● {C['info']}Commands:{C['reset']} /clear | /exit | /code | /copy <num> | /help")
-        print(f"● {C['info']}File:{C['reset']} /file <path> | --summary | --explain | --refactor")
-        print(f"● {C['info']}Project:{C['reset']} /project add <dir> | remove | list | ask <question>")
+        print(f"● {C['info']}Commands:{C['reset']} /clear {C['info']}|{C['reset']} /exit {C['info']}|{C['reset']} /code {C['info']}|{C['reset']} /copy <num> {C['info']}|{C['reset']} /help {C['info']}|{C['reset']} /resetlog")
+        print(f"● {C['info']}File:{C['reset']} /file <path> {C['info']}|{C['reset']} --summary {C['info']}|{C['reset']} --explain {C['info']}|{C['reset']} --refactor")
+        print(f"● {C['info']}Project:{C['reset']} /project add <dir> {C['info']}|{C['reset']} remove {C['info']}|{C['reset']} list {C['info']}|{C['reset']} ask <question>")
         print(f"● {C['context']}Logs:{C['reset']} saving to {CONFIG['log_dir']}")
         print(f"● {C['yellow']}Tip:{C['reset']} Use '/clear' to reset context without clearing logs")
         print(f"{C['cyan']}────────────────────────────────────────────────────────────────────{C['reset']}\n")
@@ -272,17 +272,22 @@ class FerretAI(FerretAIInit):
                 if cmd.startswith('/code'):
                     parts = first_line.split()
                     lang = parts[1] if len(parts) > 1 else ""
-                    print(f"{C['brand']}Entering code mode. Type '/end' to send.{C['reset']}\n")
+
+                    question = input(f"\n{C['yellow']}<Question> {C['reset']}")
+
+                    print(f"\n{C['brand']}Entering code mode. Type '/end' to send.{C['reset']}\n")
                     lines = []
                     while True:
                         line = input(f"{C['code']}... {C['reset']}")
                         if line.strip().lower() == "/end":
                             break
                         lines.append(line)
+
                     if not lines:
                         print(f"{C['yellow']}No code entered.{C['reset']}")
                         continue
-                    user_input = f"```{lang}\n" + "\n".join(lines) + "\n```"
+
+                    user_input = f"Question: {question}\nCode ({lang}):\n" + "\n".join(lines) + "\n"
 
                 # --- COPY CODE BLOCK ---
                 elif cmd.startswith('/copy'):
@@ -365,9 +370,9 @@ class FerretAI(FerretAIInit):
                         if not self.project_index:
                             print(f"{C['yellow']}No project loaded.{C['reset']}")
                         else:
-                            print(f"{C['info']}Indexed Files:{C['reset']}")
-                            for path, meta in self.project_index.items():
-                                print(f"  - {path} (blocks: {len(meta['blocks'])}, chunks: {len(meta['chunks'])}, imports: {len(meta['imports'])})")
+                            print(f"{C['info']}Project files:{C['reset']}")
+                            for file in self.project_index.keys():
+                                print(f" - {file}")
                         continue
 
                     # --- ASK PROJECT ---
@@ -406,7 +411,7 @@ class FerretAI(FerretAIInit):
                             used_files.add(path)
 
                         print(f"{C['info']}Using {len(used_files)} files ({used} chars).{C['reset']}")
-                        user_input = f"Answer using the relevant project code below.\n{injection}\nQuestion: {question}\n"
+                        user_input = f"Answer using the relevant project code below. You can to read the files.\n{injection}\nQuestion: {question}\n"
 
                 # --- FILE COMMANDS ---
                 elif cmd.startswith('/file'):
