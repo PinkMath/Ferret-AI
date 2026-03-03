@@ -237,12 +237,6 @@ ollama pull deepseek-coder:6.7b
 
 ---
 
-# 📜 License
-
-MIT License
-
----
-
 # 🎨 Credits - Art
 
 ☁️ Made by Cloud
